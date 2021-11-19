@@ -147,24 +147,35 @@ void VescDriver::vescPacketCallback(const std::shared_ptr<VescPacket const>& pac
 {
   if (packet->name() == "Values")
   {
-    std::shared_ptr<VescPacketValues const> values =
-      std::dynamic_pointer_cast<VescPacketValues const>(packet);
+    std::shared_ptr<VescPacketValues const> values = std::dynamic_pointer_cast<VescPacketValues const>(packet);
 
-    vesc_msgs::VescStateStamped::Ptr state_msg(new vesc_msgs::VescStateStamped);
-    state_msg->header.stamp = ros::Time::now();
-    state_msg->state.voltage_input = values->v_in();
-    state_msg->state.temperature_pcb = values->temp_pcb();
-    state_msg->state.current_motor = values->current_motor();
-    state_msg->state.current_input = values->current_in();
-    state_msg->state.speed = values->rpm();
-    state_msg->state.duty_cycle = values->duty_now();
-    state_msg->state.charge_drawn = values->amp_hours();
-    state_msg->state.charge_regen = values->amp_hours_charged();
-    state_msg->state.energy_drawn = values->watt_hours();
-    state_msg->state.energy_regen = values->watt_hours_charged();
-    state_msg->state.displacement = values->tachometer();
-    state_msg->state.distance_traveled = values->tachometer_abs();
-    state_msg->state.fault_code = values->fault_code();
+    vesc_msgs::VescStateStamped state_msg;
+    state_msg.header.stamp = ros::Time::now();
+
+    state_msg.state.voltage_input = values->v_in();
+    state_msg.state.current_motor = values->avg_motor_current();
+    state_msg.state.current_input = values->avg_input_current();
+    state_msg.state.avg_id = values->avg_id();
+    state_msg.state.avg_iq = values->avg_iq();
+    state_msg.state.duty_cycle = values->duty_cycle_now();
+    state_msg.state.speed = values->rpm();
+
+    state_msg.state.charge_drawn = values->amp_hours();
+    state_msg.state.charge_regen = values->amp_hours_charged();
+    state_msg.state.energy_drawn = values->watt_hours();
+    state_msg.state.energy_regen = values->watt_hours_charged();
+    state_msg.state.displacement = values->tachometer();
+    state_msg.state.distance_traveled = values->tachometer_abs();
+    state_msg.state.fault_code = values->fault_code();
+
+    state_msg.state.pid_pos_now = values->pid_pos_now();
+    state_msg.state.controller_id = values->controller_id();
+
+    state_msg.state.ntc_temp_mos1 = values->temp_mos1();
+    state_msg.state.ntc_temp_mos2 = values->temp_mos2();
+    state_msg.state.ntc_temp_mos3 = values->temp_mos3();
+    state_msg.state.avg_vd = values->avg_vd();
+    state_msg.state.avg_vq = values->avg_vq();
 
     state_pub_.publish(state_msg);
   }
