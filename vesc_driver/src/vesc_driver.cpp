@@ -73,6 +73,7 @@ VescDriver::VescDriver(ros::NodeHandle nh,
 
   // create vesc state (telemetry) publisher
   state_pub_ = nh.advertise<vesc_msgs::VescStateStamped>("sensors/core", 10);
+  imu_pub_ = nh.advertise<sensor_msgs::Imu>("sensors/imu", 10);
 
   // since vesc state does not include the servo position, publish the commanded
   // servo position as a "sensor"
@@ -186,6 +187,29 @@ void VescDriver::vescPacketCallback(const std::shared_ptr<VescPacket const>& pac
     // todo: might need lock here
     fw_version_major_ = fw_version->fwMajor();
     fw_version_minor_ = fw_version->fwMinor();
+  }
+    else if (packet->name() == "ImuData")
+  {
+      std::shared_ptr<VescPacketImu const> imuData =
+      std::dynamic_pointer_cast<VescPacketImu const>(packet);
+
+    sensor_msgs::Imu imu_msg;
+    imu_msg.header.stamp = ros::Time::now();
+
+    imu_msg.linear_acceleration.x = imuData->acc_x();
+    imu_msg.linear_acceleration.y = imuData->acc_y();
+    imu_msg.linear_acceleration.z = imuData->acc_z();
+
+    imu_msg.angular_velocity.x = imuData->gyr_x();
+    imu_msg.angular_velocity.y = imuData->gyr_y();
+    imu_msg.angular_velocity.z = imuData->gyr_z();
+
+    imu_msg.orientation.w = imuData->q_w();
+    imu_msg.orientation.x = imuData->q_x();
+    imu_msg.orientation.y = imuData->q_y();
+    imu_msg.orientation.z = imuData->q_z();
+
+    imu_pub_.publish(imu_msg);
   }
 }
 

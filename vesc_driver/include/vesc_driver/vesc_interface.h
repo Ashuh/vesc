@@ -25,8 +25,8 @@
 
 // -*- mode:c++; fill-column: 100; -*-
 
-#ifndef VESC_DRIVER_VESC_INTERFACE_H_
-#define VESC_DRIVER_VESC_INTERFACE_H_
+#ifndef VESC_DRIVER_VESC_INTERFACE_H
+#define VESC_DRIVER_VESC_INTERFACE_H
 
 #include <exception>
 #include <functional>
@@ -112,6 +112,7 @@ public:
 
   void requestFWVersion();
   void requestState();
+  void requestImuData();
   void setDutyCycle(double duty_cycle);
   void setCurrent(double current);
   void setBrake(double brake);
@@ -148,4 +149,4 @@ public:
 
 }  // namespace vesc_driver
 
-#endif  // VESC_DRIVER_VESC_INTERFACE_H_
+#endif  // VESC_DRIVER_VESC_INTERFACE_H

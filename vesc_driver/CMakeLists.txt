@@ -19,6 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
   roslint
   serial
   std_msgs
+  sensor_msgs
   vesc_msgs
 )
 
